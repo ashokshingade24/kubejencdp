@@ -99,13 +99,16 @@ stages{
         }
     }
     stage('Push image') {
-    withCredentials([usernamePassword( credentialsId: 'JENKINS_DOCKER_CREDENTIALS_ID', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
-        sh "docker login -u $USER -p $PASSWORD ${DOCKER_REGISTRY_URL}"
-        docker.withRegistry("http://${DOCKER_REGISTRY_URL}", "JENKINS_DOCKER_CREDENTIALS_ID") {
-            sh "docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}"
+        steps {
+            withCredentials([usernamePassword( credentialsId: 'JENKINS_DOCKER_CREDENTIALS_ID', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
+                
+                sh "docker login -u $USER -p $PASSWORD ${DOCKER_REGISTRY_URL}"
+                docker.withRegistry("http://${DOCKER_REGISTRY_URL}", "JENKINS_DOCKER_CREDENTIALS_ID") {
+                    sh "docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}"
+                }
+            }
         }
     }
-}
     stage('Deploy'){
         steps{
         withCredentials([file(credentialsId: "${JENKINS_GCLOUD_CRED_ID}", variable: 'JENKINSGCLOUDCREDENTIAL')])
