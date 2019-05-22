@@ -110,31 +110,6 @@ stages{
             }
         }
     }
-    stage('Deploy'){
-        steps{
-        withCredentials([file(credentialsId: "${JENKINS_GCLOUD_CRED_ID}", variable: 'JENKINSGCLOUDCREDENTIAL')])
-        {
-        sh """
-            gcloud auth activate-service-account --key-file=${JENKINSGCLOUDCREDENTIAL}
-            gcloud config set compute/zone asia-southeast1-a
-            gcloud config set compute/region asia-southeast1
-            gcloud config set project ${GCLOUD_PROJECT_ID}
-            gcloud container clusters get-credentials ${GCLOUD_K8S_CLUSTER_NAME}
-            
-            chmod +x $BASE_DIR/k8s/process_files.sh
-
-            cd $BASE_DIR/k8s/
-            ./process_files.sh "$GCLOUD_PROJECT_ID" "${IMAGE_NAME}" "${DOCKER_PROJECT_NAMESPACE}/${IMAGE_NAME}:${RELEASE_TAG}" "./${IMAGE_NAME}/" ${TIMESTAMP}
-
-            cd $BASE_DIR/k8s/${IMAGE_NAME}/.
-            kubectl apply -f $BASE_DIR/k8s/${IMAGE_NAME}/
-            kubectl rollout status --v=5 --watch=true -f $BASE_DIR/k8s/$IMAGE_NAME/$IMAGE_NAME-deployment.yml
-            
-            gcloud auth revoke --all
-            """
-        }
-        }
-    }
 }
 
 post {
