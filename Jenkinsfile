@@ -106,7 +106,7 @@ stages{
             echo $DOCKER_PASSWD | docker login --username ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL}
             '''
             docker.withRegistry("http://${DOCKER_REGISTRY_URL}", "JENKINS_DOCKER_CREDENTIALS_ID") {
-                docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}
+                sh "docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}"
             }
             }
         }
