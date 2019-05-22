@@ -103,10 +103,11 @@ stages{
             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "${JENKINS_DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWD']])
             {
             sh '''
-            echo $DOCKER_PASSWD | docker login --username ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL} 
-            docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}
-            docker logout
+            echo $DOCKER_PASSWD | docker login --username ${DOCKER_USERNAME} --password-stdin ${DOCKER_REGISTRY_URL}
             '''
+            docker.withRegistry("http://${DOCKER_REGISTRY_URL}", "JENKINS_DOCKER_CREDENTIALS_ID") {
+                docker push ashokshingade24/${IMAGE_NAME}:${RELEASE_TAG}
+            }
             }
         }
     }
